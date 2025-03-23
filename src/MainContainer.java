@@ -8,17 +8,15 @@ import jade.wrapper.ControllerException;
 
 public class MainContainer {
     public static void main(String[] args) {
-        Runtime runtime = Runtime.instance();
-
-        Properties properties = new ExtendedProperties();
-        properties.setProperty(Profile.GUI, "true");
-        Profile profile = new ProfileImpl(properties);
-        AgentContainer mainContainer = runtime.createMainContainer(profile);
         try {
-            mainContainer.start();
-
-        } catch (ControllerException e) {
-            throw new RuntimeException(e);
+            // Création du conteneur principal
+            Runtime runtime = Runtime.instance();
+            ProfileImpl profile = new ProfileImpl(true); // true signifie que c'est un conteneur principal
+            profile.setParameter(Profile.GUI, "true"); // Active l'interface graphique de JADE
+            AgentContainer mainContainer = runtime.createMainContainer(profile);
+            System.out.println("Conteneur principal démarré avec succès");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

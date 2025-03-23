@@ -7,19 +7,118 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
-public class VisionContainer {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Handler;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.SimpleFormatter;
+
+public class VisionContainer extends JFrame {
+    private static final Logger LOGGER = Logger.getLogger(VisionContainer.class.getName());
+    private JTextArea logArea;
+    private JTextField mainHostField;
+    private JButton startButton;
+    private AgentContainer agentContainer;
+
+    public VisionContainer() {
+        // Configuration du logger
+        configureLogger();
+
+        // Configuration de la fenêtre
+        setTitle("Agent Vision Cognitif Container");
+        setSize(600, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Panel pour l'entrée de l'adresse IP
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        JLabel hostLabel = new JLabel("Adresse du conteneur principal:");
+        mainHostField = new JTextField("localhost", 15);
+        startButton = new JButton("Démarrer l'agent Vision Cognitif");
+
+        inputPanel.add(hostLabel);
+        inputPanel.add(mainHostField);
+        inputPanel.add(startButton);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        // Zone de logs
+        logArea = new JTextArea();
+        logArea.setEditable(false);
+        logArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane scrollPane = new JScrollPane(logArea);
+        scrollPane.setPreferredSize(new Dimension(580, 400));
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Action du bouton "Démarrer"
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String host = mainHostField.getText();
+                if (!host.isEmpty()) {
+                    startVisionAgent(host);
+                    startButton.setEnabled(false);
+                } else {
+                    JOptionPane.showMessageDialog(VisionContainer.this,
+                            "Veuillez entrer une adresse valide.");
+                }
+            }
+        });
+
+        // Afficher la fenêtre
+        setVisible(true);
+    }
+
+    private void configureLogger() {
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new SimpleFormatter());
+        LOGGER.addHandler(consoleHandler);
+        LOGGER.setLevel(Level.ALL);
+    }
+
+    private void startVisionAgent(String mainHost) {
+        try {
+            // Démarrer le container JADE
+            Runtime rt = Runtime.instance();
+            Profile profile = new ProfileImpl(false); // false car ce n'est pas un conteneur principal
+            profile.setParameter(Profile.MAIN_HOST, mainHost);
+            profile.setParameter(Profile.MAIN_PORT, "1099"); // Port par défaut de JADE
+
+            log("Connexion au conteneur principal sur " + mainHost + "...");
+            agentContainer = rt.createAgentContainer(profile);
+            log("Conteneur créé avec succès");
+
+            // Démarrer l'agent Vision Cognitif
+            AgentController agentController = agentContainer.createNewAgent(
+                    "VisionAgent",
+                    "Agents.AgentVisionCognitif",
+                    new Object[]{}
+            );
+            agentController.start();
+            log("Agent Vision Cognitif démarré");
+        } catch (Exception e) {
+            log("ERREUR: " + e.getMessage());
+            e.printStackTrace();
+            startButton.setEnabled(true);
+        }
+    }
+
+    private void log(String message) {
+        SwingUtilities.invokeLater(() -> {
+            logArea.append(message + "\n");
+            // Autoscroll
+            logArea.setCaretPosition(logArea.getDocument().getLength());
+        });
+        LOGGER.info(message);
+    }
 
     public static void main(String[] args) {
-        try {
-            jade.core.Runtime runtime = Runtime.instance();
-            Profile profile = new ProfileImpl(false);
-            profile.setParameter(Profile.MAIN_HOST, "192.168.100.208");
-
-            AgentContainer agentContainer = runtime.createAgentContainer(profile);
-            AgentController agentController = agentContainer.createNewAgent("Calculator", "Agents.AgentVisionCognitif", new Object[0]);
-            agentController.start();
-        } catch (ControllerException e) {
-            throw new RuntimeException(e);
-        }
+        SwingUtilities.invokeLater(() -> new VisionContainer());
     }
 }

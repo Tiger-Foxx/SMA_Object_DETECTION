@@ -2,8 +2,6 @@ package Agents;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -21,7 +19,6 @@ import org.opencv.videoio.VideoCapture;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -109,28 +106,6 @@ public class AgentVisionCognitif extends Agent {
 
         // Rechercher d'autres agents dans le conteneur
         discoverReceiverAgents();
-        // Ajouter ce comportement dans la méthode setup()
-        addBehaviour(new CyclicBehaviour(this) {
-            @Override
-            public void action() {
-                ACLMessage msg = receive();
-                if (msg != null) {
-                    String content = msg.getContent();
-                    String sender = msg.getSender().getLocalName();
-
-                    // Traiter les différents types de messages
-                    if (content.equals("PING_RESPONSE")) {
-                        logMessage("✓ Connecté à l'agent " + sender);
-                    } else if (content.startsWith("ACK:")) {
-                        // Message de confirmation de réception
-                        int count = Integer.parseInt(content.substring(4));
-                        logMessage("✓ Agent " + sender + " a reçu " + count + " détections");
-                    }
-                } else {
-                    block();
-                }
-            }
-        });
     }
 
     private void initModels() {
@@ -185,14 +160,9 @@ public class AgentVisionCognitif extends Agent {
     }
 
     private void createModernUI() {
-        // Configuration du look and feel moderne
+        // Configurer look and feel moderne
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Appliquer des styles supplémentaires
-            UIManager.put("Button.arc", 15);
-            UIManager.put("Component.arc", 15);
-            UIManager.put("ProgressBar.arc", 15);
-            UIManager.put("TextComponent.arc", 15);
         } catch (Exception e) {
             System.err.println("Impossible de définir le look and feel: " + e.getMessage());
         }
@@ -207,57 +177,42 @@ public class AgentVisionCognitif extends Agent {
             }
         });
 
-        // Utiliser BorderLayout avec des marges plus grandes
-        frame.setLayout(new BorderLayout(15, 15));
+        // Utiliser un gestionnaire de mise en page en bordure
+        frame.setLayout(new BorderLayout(10, 10));
 
-        // Panel principal avec marge et couleur de fond plus moderne
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(248, 250, 252));
+        // Panel principal avec marge
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+        mainPanel.setBackground(new Color(240, 240, 245));
 
-        // Créer le panneau vidéo avec une bordure élégante et arrondissement
+        // Créer le panneau vidéo avec une bordure élégante
         cameraFeed = new JLabel();
         cameraFeed.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-        cameraFeed.setBackground(new Color(30, 41, 59));
+        cameraFeed.setBackground(Color.BLACK);
         cameraFeed.setOpaque(true);
         cameraFeed.setHorizontalAlignment(SwingConstants.CENTER);
-        cameraFeed.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
-                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        cameraFeed.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 1));
 
-        // Panneau de flux vidéo au centre avec ombre
+        // Panneau de flux vidéo au centre
         JPanel videoPanel = new JPanel(new BorderLayout());
         videoPanel.add(cameraFeed, BorderLayout.CENTER);
-        videoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
-        videoPanel.setOpaque(false);
+        videoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         // Créer le panneau de contrôle avec un design moderne
         createControlPanel();
 
-        // Créer le panneau de journalisation amélioré
-        createEnhancedLogPanel();
+        // Créer le panneau de journalisation
+        createLogPanel();
 
         // Ajouter les panneaux au panneau principal
         mainPanel.add(videoPanel, BorderLayout.CENTER);
         mainPanel.add(controlPanel, BorderLayout.EAST);
 
-        // Statut et barre de progression moderne
-        JPanel statusPanel = new JPanel(new BorderLayout(10, 0));
-        statusPanel.setOpaque(false);
-
+        // Statut et barre de progression
         statusLabel = new JLabel("Système prêt", SwingConstants.LEFT);
-        statusLabel.setForeground(new Color(37, 99, 235));
-        statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        statusPanel.add(statusLabel, BorderLayout.WEST);
-
-        // Ajouter un indicateur d'état avec animation
-        JProgressBar activityIndicator = new JProgressBar();
-        activityIndicator.setIndeterminate(true);
-        activityIndicator.setVisible(false);
-        activityIndicator.setPreferredSize(new Dimension(80, 12));
-        statusPanel.add(activityIndicator, BorderLayout.EAST);
-
-        mainPanel.add(statusPanel, BorderLayout.SOUTH);
+        statusLabel.setForeground(new Color(30, 120, 80));
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        mainPanel.add(statusLabel, BorderLayout.SOUTH);
 
         // Ajouter le panneau principal à la fenêtre
         frame.add(mainPanel, BorderLayout.CENTER);
@@ -269,73 +224,6 @@ public class AgentVisionCognitif extends Agent {
 
         // Initialiser l'état des boutons
         updateControlState();
-    }
-    private void createEnhancedLogPanel() {
-        // Zone de journal améliorée avec plus d'espace et meilleure lisibilité
-        logArea = new JTextArea(8, 40); // Hauteur doublée
-        logArea.setEditable(false);
-        logArea.setFont(new Font("Consolas", Font.PLAIN, 13));
-        logArea.setBackground(new Color(248, 250, 252));
-        logArea.setForeground(new Color(30, 41, 59));
-        logArea.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        logArea.setLineWrap(true);
-        logArea.setWrapStyleWord(true);
-
-        // Ajouter un DefaultCaret pour l'auto-scroll
-        DefaultCaret caret = (DefaultCaret) logArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        // Créer un défilement avec des barres modernes
-        JScrollPane scrollPane = new JScrollPane(logArea);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240), 1));
-        scrollPane.setPreferredSize(new Dimension(FRAME_WIDTH, 150)); // Plus de hauteur
-
-        // Ajouter des boutons de contrôle pour le log
-        JPanel logControlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        logControlPanel.setOpaque(false);
-
-        JButton clearLogButton = new JButton("Effacer");
-        clearLogButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        clearLogButton.addActionListener(e -> logArea.setText(""));
-
-        JButton saveLogButton = new JButton("Enregistrer");
-        saveLogButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        saveLogButton.addActionListener(e -> saveLogToFile());
-
-        logControlPanel.add(clearLogButton);
-        logControlPanel.add(saveLogButton);
-
-        // Panel contenant le scroll et les boutons
-        JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.add(scrollPane, BorderLayout.CENTER);
-        logPanel.add(logControlPanel, BorderLayout.SOUTH);
-
-        // Ajouter le panneau au bas de la fenêtre
-        frame.add(logPanel, BorderLayout.SOUTH);
-    }
-
-    private void saveLogToFile() {
-        try {
-            // Créer un répertoire logs s'il n'existe pas
-            File dir = new File("logs");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-
-            // Générer un nom de fichier avec horodatage
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            String timestamp = sdf.format(new Date());
-            String filename = "logs/vision_log_" + timestamp + ".txt";
-
-            // Enregistrer le log
-            java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(filename));
-            writer.write(logArea.getText());
-            writer.close();
-
-            logMessage("✓ Journal enregistré: " + filename);
-        } catch (Exception ex) {
-            logMessage("⚠️ Erreur lors de l'enregistrement du journal: " + ex.getMessage());
-        }
     }
 
     private void createControlPanel() {
@@ -581,59 +469,52 @@ public class AgentVisionCognitif extends Agent {
     }
 
     private void discoverReceiverAgents() {
-        // Utiliser le Directory Facilitator de JADE pour trouver les agents récepteurs
-        DFAgentDescription template = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("receiver-agent");
-        template.addServices(sd);
+        // Vider la liste actuelle des agents
+        receiverAgents.clear();
 
         try {
-            DFAgentDescription[] results = DFService.search(this, template);
-            receiverAgents.clear();
+            // Créer un template pour rechercher dans le DF
+            DFAgentDescription template = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("detection-receiver"); // Le type de service que nous recherchons
+            template.addServices(sd);
 
-            for (DFAgentDescription result : results) {
-                AID agent = result.getName();
-                receiverAgents.add(agent);
+            // Rechercher les agents qui offrent ce service
+            DFAgentDescription[] result = DFService.search(this, template);
+
+            System.out.println("Recherche d'agents récepteurs: " + result.length + " trouvé(s)");
+
+            // Ajouter chaque agent trouvé à notre liste
+            for (DFAgentDescription agent : result) {
+                AID aid = agent.getName();
+                receiverAgents.add(aid);
+                System.out.println("Agent récepteur trouvé: " + aid.getName());
             }
-
-            // Si aucun agent n'est trouvé, rechercher sur le réseau
-            if (receiverAgents.isEmpty()) {
-                searchRemoteAgents();
-            }
-
-            // Mettre à jour le sélecteur d'agents
-            SwingUtilities.invokeLater(() -> {
-                agentSelector.removeAllItems();
-                agentSelector.addItem("Tous les agents");
-                for (AID agent : receiverAgents) {
-                    agentSelector.addItem(agent.getLocalName() + "@" + agent.getName().split("@")[1]);
-                }
-            });
-
-            logMessage("✓ " + receiverAgents.size() + " agents récepteurs trouvés");
         } catch (FIPAException e) {
-            logMessage("⚠️ Erreur lors de la recherche d'agents: " + e.getMessage());
+            System.err.println("Erreur lors de la recherche d'agents récepteurs: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
 
-    private void searchRemoteAgents() {
-        // Rechercher spécifiquement l'agent ReceiverAgent sur le réseau
-        AID remoteAgent = new AID("ReceiverAgent", AID.ISLOCALNAME);
-        receiverAgents.add(remoteAgent);
+        // Mettre à jour le sélecteur d'agents dans l'interface utilisateur
+        SwingUtilities.invokeLater(() -> {
+            agentSelector.removeAllItems();
+            agentSelector.addItem("Tous les agents");
+            for (AID agent : receiverAgents) {
+                agentSelector.addItem(agent.getLocalName());
+            }
 
-        // Ajouter un comportement pour vérifier la connectivité
-        addBehaviour(new OneShotBehaviour() {
-            @Override
-            public void action() {
-                ACLMessage pingMsg = new ACLMessage(ACLMessage.QUERY_IF);
-                pingMsg.addReceiver(remoteAgent);
-                pingMsg.setContent("PING");
-                send(pingMsg);
-                logMessage("🔍 Recherche de l'agent distant: " + remoteAgent.getLocalName());
+            // Ajouter un message si aucun agent n'est trouvé
+            if (receiverAgents.isEmpty()) {
+                statusLabel.setText("Aucun agent récepteur trouvé");
+            } else {
+                statusLabel.setText(receiverAgents.size() + " agent(s) récepteur(s) trouvé(s)");
             }
         });
+
+        // Si vous voulez une recherche périodique, vous pouvez ajouter un comportement TickerBehaviour
+        // qui appellera cette méthode régulièrement
     }
 
     // Classe interne pour le suivi des objets
@@ -928,52 +809,33 @@ public class AgentVisionCognitif extends Agent {
             }
 
             if (recipients.isEmpty()) {
-                // Tenter de redécouvrir les agents si la liste est vide
-                discoverReceiverAgents();
                 return;
             }
 
-            // Créer et envoyer un message JSON contenant toutes les détections
-            try {
-                // Construire un JSON avec toutes les détections
-                StringBuilder jsonBuilder = new StringBuilder("{\"detections\":[");
-                boolean first = true;
+            // Créer et envoyer des messages pour chaque détection
+            for (DetectionResult detection : detections) {
+                try {
+                    // Format du message: TYPE:DISTANCE:CONFIDENCE
+                    String content = String.format("DETECTION:%s:%.2f:%.2f",
+                            detection.type, detection.distance, detection.confidence);
 
-                for (DetectionResult detection : detections) {
-                    if (!first) {
-                        jsonBuilder.append(",");
+                    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                    for (AID recipient : recipients) {
+                        msg.addReceiver(recipient);
                     }
-                    jsonBuilder.append(String.format(
-                            "{\"type\":\"%s\",\"distance\":%.2f,\"confidence\":%.2f,\"x\":%d,\"y\":%d,\"width\":%d,\"height\":%d}",
-                            detection.type, detection.distance, detection.confidence,
-                            detection.bounds.x, detection.bounds.y, detection.bounds.width, detection.bounds.height
-                    ));
-                    first = false;
+
+                    msg.setContent(content);
+                    send(msg);
+
+                    // Journaliser l'envoi (uniquement pour quelques messages)
+                    if (Math.random() < 0.1) { // Réduire la verbosité des journaux
+                        logMessage("Message envoyé: " + content + " à " +
+                                (selectedIndex == 0 ? "tous les agents" : recipients.get(0).getLocalName()));
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de l'envoi du message: " + e.getMessage());
                 }
-
-                jsonBuilder.append("],\"timestamp\":").append(System.currentTimeMillis()).append("}");
-
-                // Créer et envoyer le message
-                ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                for (AID recipient : recipients) {
-                    msg.addReceiver(recipient);
-                }
-
-                msg.setContent(jsonBuilder.toString());
-                msg.setOntology("vision-detection");
-                send(msg);
-
-                // Journaliser l'envoi (uniquement occasionnellement)
-                if (Math.random() < 0.1) {
-                    int detectionCount = detections.size();
-                    String recipientInfo = selectedIndex == 0 ?
-                            "tous les agents (" + recipients.size() + ")" :
-                            recipients.get(0).getLocalName();
-
-                    logMessage("📤 Envoi de " + detectionCount + " détections à " + recipientInfo);
-                }
-            } catch (Exception e) {
-                logMessage("⚠️ Erreur lors de l'envoi des messages: " + e.getMessage());
             }
         }
 
