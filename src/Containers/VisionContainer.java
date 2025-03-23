@@ -13,7 +13,7 @@ public class VisionContainer {
         try {
             jade.core.Runtime runtime = Runtime.instance();
             Profile profile = new ProfileImpl(false);
-            profile.setParameter(Profile.MAIN_HOST, "localhost");
+            profile.setParameter(Profile.MAIN_HOST, "192.168.100.208");
 
             AgentContainer agentContainer = runtime.createAgentContainer(profile);
             AgentController agentController = agentContainer.createNewAgent("Calculator", "Agents.AgentVisionCognitif", new Object[0]);

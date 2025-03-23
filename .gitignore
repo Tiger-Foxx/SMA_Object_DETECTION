@@ -11,6 +11,10 @@ out/
 .settings
 .springBeans
 .sts4-cache
+*.weights
+.weights
+*.caffemodel
+.caffemodel
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
