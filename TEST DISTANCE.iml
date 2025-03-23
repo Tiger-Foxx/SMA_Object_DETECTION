@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jade" level="project" />
+    <orderEntry type="library" name="commons-codec-1.18.0" level="project" />
+    <orderEntry type="library" name="commons-codec-1.18.0-javadoc" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/MYOPENCV/opencv/build/java/opencv-4110.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <NATIVE>
+          <root url="file://C:/MYOPENCV/opencv/build/java/x64" />
+        </NATIVE>
+        <SOURCES>
+          <root url="jar://C:/MYOPENCV/opencv/build/java/opencv-4110.jar!/" />
+          <root url="jar://C:/MYOPENCV/opencv/build/java/opencv-4110.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
