@@ -24,14 +24,15 @@ public class ReceiverContainer extends JFrame {
     private JButton startButton;
     private AgentContainer agentContainer;
 
+
     public ReceiverContainer() {
         // Configuration du logger
         configureLogger();
 
         // Configuration de la fenêtre
         setTitle("Receiver Container");
-        setSize(600, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 200);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Panel pour l'entrée de l'adresse IP
@@ -53,7 +54,7 @@ public class ReceiverContainer extends JFrame {
         logArea.setEditable(false);
         logArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         JScrollPane scrollPane = new JScrollPane(logArea);
-        scrollPane.setPreferredSize(new Dimension(580, 400));
+        scrollPane.setPreferredSize(new Dimension(580, 200));
         add(scrollPane, BorderLayout.CENTER);
 
         // Action du bouton "Démarrer"

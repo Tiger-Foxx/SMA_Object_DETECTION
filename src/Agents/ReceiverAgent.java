@@ -85,6 +85,7 @@ public class ReceiverAgent extends Agent {
         try {
             // Utiliser un look and feel moderne
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                System.out.print("Look and feel dispo : "+info.getName());
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;

@@ -73,7 +73,7 @@ public class AgentVisionCognitif extends Agent {
     private int selectedMode = 0; // 0: Tous, 1: Visages, 2: Objets
     private Map<String, ObjectTracker> trackedObjects = new HashMap<>();
     private long lastMessageTime = 0;
-    private static final long MESSAGE_THRESHOLD_MS = 500; // Envoyer au max 2 messages par seconde
+    private static final long MESSAGE_THRESHOLD_MS = 1000; // Envoyer au max 2 messages par seconde
 
     // Interface utilisateur
     private JFrame frame;
@@ -235,7 +235,7 @@ public class AgentVisionCognitif extends Agent {
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         controlPanel.setBackground(new Color(245, 245, 250));
-        controlPanel.setPreferredSize(new Dimension(250, FRAME_HEIGHT));
+        controlPanel.setPreferredSize(new Dimension(250, FRAME_HEIGHT-150));
 
         // Titre du panneau de contrôle
         JLabel titleLabel = new JLabel("Contrôle & Configuration");
@@ -261,11 +261,15 @@ public class AgentVisionCognitif extends Agent {
         addComponentWithMargin(controlPanel, modeLabel, 0, 0, 0, 5);
 
         String[] modes = {"Tous les objets", "Visages seulement", "Objets COCO"};
+        JPanel selectorPanel= new JPanel();
+        selectorPanel.setSize(50,5);
         modeSelector = new JComboBox<>(modes);
         modeSelector.setFont(new Font("Arial", Font.PLAIN, 12));
         modeSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         modeSelector.addActionListener(e -> selectedMode = modeSelector.getSelectedIndex());
-        addComponentWithMargin(controlPanel, modeSelector, 0, 0, 0, 15);
+        selectorPanel.add(modeSelector);
+        addComponentWithMargin(controlPanel, selectorPanel, 0, 0, 0, 15);
 
         // Seuil de confiance
         JLabel thresholdLabel = new JLabel("Seuil de confiance:");
@@ -318,7 +322,10 @@ public class AgentVisionCognitif extends Agent {
         agentSelector = new JComboBox<>(agentNames);
         agentSelector.setFont(new Font("Arial", Font.PLAIN, 12));
         agentSelector.setAlignmentX(Component.LEFT_ALIGNMENT);
-        addComponentWithMargin(controlPanel, agentSelector, 0, 0, 0, 15);
+        JPanel selectorPanel2= new JPanel();
+        selectorPanel2.setSize(50,5);
+        selectorPanel2.add(agentSelector);
+        addComponentWithMargin(controlPanel, selectorPanel2, 0, 0, 0, 15);
 
         // Activation des messages
         messageToggle = new JCheckBox("Envoi des messages");
@@ -351,7 +358,7 @@ public class AgentVisionCognitif extends Agent {
 
     private void createLogPanel() {
         // Zone de journal pour afficher les événements
-        logArea = new JTextArea(5, 40);
+        logArea = new JTextArea(10, 40);
         logArea.setEditable(false);
         logArea.setFont(new Font("Consolas", Font.PLAIN, 12));
         logArea.setBackground(new Color(245, 245, 245));

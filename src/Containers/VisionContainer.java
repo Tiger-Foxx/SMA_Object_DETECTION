@@ -30,7 +30,7 @@ public class VisionContainer extends JFrame {
 
         // Configuration de la fenêtre
         setTitle("Agent Vision Cognitif Container");
-        setSize(600, 500);
+        setSize(600, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
