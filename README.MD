@@ -170,19 +170,19 @@ projet-sma/
 
 ## Captures d'Écran
 ### 1. Interface de Saisie de l'IP
-![Saisie de l'IP](screens/0.png)
+![Saisie de l'IP](screen/0.png)
 
 ### 2. Interface de l'Agent Vision (Inactive)
-![Vision Inactive](screens/2.png)
+![Vision Inactive](screen/2.png)
 
 ### 3. Interface de l'Agent Vision (Active)
-![Vision Active](screens/3.png)
+![Vision Active](screen/3.png)
 
 ### 4. Logs de l'Agent Vision
 ![Logs Vision](screens/4.png)
 
 ### 5. Résultats dans l'Agent Récepteur
-![Résultats Récepteur](screens/5.png)
+![Résultats Récepteur](screen/5.png)
 
 ---
 
